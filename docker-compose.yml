@@ -1,0 +1,30 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/letsencrypt
+      - ./nginx/html:/usr/share/nginx/html
+    networks:
+      - vpn_network
+
+  3xui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: 3xui
+    restart: always
+    environment:
+      - XRAY_VMESS_AEAD_FORCED=true
+    volumes:
+      - ./db:/etc/x-ui
+      - ./logs:/var/log/xray
+    networks:
+      - vpn_network
+
+networks:
+  vpn_network:
+    driver: bridge
